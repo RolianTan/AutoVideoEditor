@@ -1,0 +1,47 @@
+python main.py \
+ --json_path="test_caption_output.json"\
+ --out_dir="exp01" \
+ --n_frames=8 \
+ --frame_size=224 \
+ --batch_size=4 \
+ --target_fps=10 \
+ --epochs=10 \
+ --lr=1e-3 \
+ --projection_dim=128
+
+
+ python main.py \
+ --json_path="training_videos/dataset01/dataset_01.json"\
+ --out_dir="exp02" \
+ --n_frames=3 \
+ --frame_size=224 \
+ --batch_size=64 \
+ --target_fps=5 \
+ --epochs=50 \
+ --lr=1e-5 \
+ --projection_dim=512
+
+python inference.py \
+  --exp_dir="exp01" \
+  --pretrained="best_model.pt" \
+  --data_dir="dataset01" \
+  --video_name="yourname.mp4" \
+  --json_name="infer_json.json" \
+  --fps=10 \
+  --n_frames=8 \
+  --size=224 \
+  --out_mash_video="test_mash_up_yourname.mp4" \
+  --projection_dim=768
+
+python inference.py \
+    --exp_dir="exp02" \
+    --pretrained="best_model.pt" \
+    --data_dir="inference" \
+    --video_name="output.mp4" \
+    --json_name="feature_code.json" \
+    --fps=10 \
+    --n_frames=8 \
+    --size=224 \
+    --out_mash_video="test_mash_up_output.mp4" \
+    --reference_video="training_videos/dataset01/video15.mp4" \
+    --projection_dim=512
