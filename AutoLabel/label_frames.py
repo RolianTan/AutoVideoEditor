@@ -4,34 +4,56 @@ from util import read_file, load_prompt
 import json
 import os
 import ast
+from PIL import Image
+import io
+import time
 # Initialize OpenAI client
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Convert the image to base64 format
 def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
+    # Open the image
+    with Image.open(image_path) as img:
+        print(f"Original size: {img.size}")  # (width, height)
+
+        # Resize to (width=640, height=480)
+        resized_img = img.resize((640, 480))
+
+        # Save to buffer in memory
+        buffer = io.BytesIO()
+        resized_img.save(buffer, format="JPEG")
+        buffer.seek(0)
+
+        # Encode to base64
+        return base64.b64encode(buffer.read()).decode("utf-8")
 
 # Path to your image
 
 def get_frame_description(image_path, output_path):
     base64_image = encode_image(image_path)
-    system_prompt = load_prompt("prompts/system.md")
-    user_prompt = load_prompt("prompts/user.md")
-    assistant_prompt = load_prompt("prompts/assistant.md")
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        response_format={ "type": "json_object" },
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": [
-                {"type": "text", "text": user_prompt},
-                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}  # Include base64 image
-            ]},
-            {"role": "assistant", "content": assistant_prompt}
-        ],
-        max_tokens=100
-    )
+    system_prompt = load_prompt("AutoLabel/prompts_mad/system.md")
+    user_prompt = load_prompt("AutoLabel/prompts_mad/user.md")
+    assistant_prompt = load_prompt("AutoLabel/prompts_mad/assistant.md")
+    while True:
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                response_format={ "type": "json_object" },
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": [
+                        {"type": "text", "text": user_prompt},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}  # Include base64 image
+                    ]},
+                    {"role": "assistant", "content": assistant_prompt}
+                ],
+                max_tokens=100
+            )
+            break
+        except Exception as e:
+            print(f"Error: {e}")
+            time.sleep(5)  # Wait for a bit before retrying
+
     frame_description = response.choices[0].message.content
     # Print the response
     print(frame_description)
@@ -65,5 +87,5 @@ def process_frames(input_folder, output_folder, c = 1):
 
         print(f"Processed: {image_filename} → {json_filename}")
 
-process_frames("test_frames", "test_frames_labels", 1)
+process_frames("scene_frames", "mad_template_labels", 1)
 # get_frame_description("test_frames/city1", "test_frames_labels/city1.")

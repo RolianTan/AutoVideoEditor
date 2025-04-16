@@ -1,42 +1,59 @@
-import cv2
 import os
+import cv2
+from scenedetect import VideoManager, SceneManager
+from scenedetect.detectors import ContentDetector
 
-def extract_frames(video_file, output_folder, frame_interval=3):
+def extract_scene_keyframes(video_path, output_folder, threshold=30.0):
     """
-    Extracts frames from a video file at a specified interval and saves them as images.
-    
-    :param video_file: Path to the input video file
-    :param output_folder: Directory where extracted frames will be saved
-    :param frame_interval: Time interval (in seconds) between frames to be saved
+    Uses PySceneDetect to detect scenes and extract keyframes from each (start, middle, end),
+    ignoring scenes shorter than 1 second.
     """
     # Create output directory if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
-    
-    # Open video file
-    cap = cv2.VideoCapture(video_file)
-    if not cap.isOpened():
-        print("Error: Could not open video file.")
-        return
-    
-    fps = int(cap.get(cv2.CAP_PROP_FPS))  # Frames per second
-    frame_count = 0
-    frame_save_count = 0
-    
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break  # End of video
+
+    # Set up PySceneDetect manager
+    video_manager = VideoManager([video_path])
+    scene_manager = SceneManager()
+    scene_manager.add_detector(ContentDetector(threshold=threshold))
+    video_manager.set_downscale_factor()  # optional, speed up detection
+    video_manager.start()
+
+    # Detect scenes
+    scene_manager.detect_scenes(frame_source=video_manager)
+    scene_list = scene_manager.get_scene_list()
+    print(f"Detected {len(scene_list)} scenes (before filtering).")
+
+    # OpenCV video access
+    cap = cv2.VideoCapture(video_path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    scene_save_count = 0
+    for i, (start, end) in enumerate(scene_list):
+        start_frame = start.get_frames() + 10
+        end_frame = end.get_frames() - 10  # first and last frames tends to be transitions
+        duration_frames = end_frame - start_frame + 20
+
+        # Skip if the scene duration is less than 1.5 second
+        if duration_frames < fps * 1.5:
+            print(f"Skipping scene {i} (duration {duration_frames/fps:.2f}s)")
+            continue
+
+        mid_frame = (start_frame + end_frame) // 2
         
-        if frame_count % (fps * frame_interval) == 0:
-            frame_filename = os.path.join(output_folder, f"frame_{frame_save_count:04d}.jpg")
-            cv2.imwrite(frame_filename, frame)
-            frame_save_count += 1
-            print(f"Saved: {frame_filename}")
-        
-        frame_count += 1
-    
+        for j, frame_num in enumerate([start_frame, mid_frame, end_frame]):
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
+            ret, frame = cap.read()
+            if not ret:
+                print(f"Failed to read frame {frame_num} for scene {i}")
+                continue
+            frame_path = os.path.join(output_folder, f"scene_{scene_save_count}_frame{j}.jpg")
+            cv2.imwrite(frame_path, frame)
+            print(f"Saved: {frame_path}")
+
+        scene_save_count += 1
+
     cap.release()
-    print("Frame extraction complete.")
+    print("Scene keyframe extraction complete.")
 
 # Example usage
-extract_frames("input.mp4", "vlog_frames_1")
+extract_scene_keyframes("AutoLabel/mad_template.mp4", "scene_frames")
