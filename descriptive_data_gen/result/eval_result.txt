@@ -1,0 +1,7 @@
+(sys) Rolians-MacBook:Data_Generation rolian$ python evaluation.py
+Caption 0 - Total_Vote: 1; Correct_Model: ['gpt-4.5-preview']
+Caption 1 - Total_Vote: 1; Correct_Model: ['gpt-4.5-preview']
+Caption 2 - Total_Vote: 3; Correct_Model: ['gpt-4.5-preview', 'gpt-4o', 'gpt-4o-mini']
+The best caption is:
+ [scene: Urban nighttime cityscape with towering skyscrapers, style: Modern and vibrant with a focus on architectural symmetry, composition: Balanced with a strong vertical emphasis, using lines and angles to draw the eye upward, mood/tone: Energetic yet serene, capturing the city's lively but calm ambiance, story/meaning: Reflects the coexistence of human industry and tranquility, showcasing the continuous heartbeat of urban life.]
+ with vote 3.
