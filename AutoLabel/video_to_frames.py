@@ -9,6 +9,8 @@ def extract_scene_keyframes(video_path, output_folder, threshold=30.0):
     ignoring scenes shorter than 1 second.
     """
     # Create output directory if it doesn't exist
+    dataset_name = os.path.splitext(os.path.basename(video_path))[0]
+    output_folder = os.path.join(output_folder, dataset_name, "frames")
     os.makedirs(output_folder, exist_ok=True)
 
     # Set up PySceneDetect manager
@@ -34,13 +36,13 @@ def extract_scene_keyframes(video_path, output_folder, threshold=30.0):
         duration_frames = end_frame - start_frame + 20
 
         # Skip if the scene duration is less than 1.5 second
-        if duration_frames < fps * 1.5:
+        if duration_frames < fps * 2:
             print(f"Skipping scene {i} (duration {duration_frames/fps:.2f}s)")
             continue
 
         mid_frame = (start_frame + end_frame) // 2
-        
-        for j, frame_num in enumerate([start_frame, mid_frame, end_frame]):
+        #for j, frame_num in enumerate([start_frame, mid_frame, end_frame]):
+        for j, frame_num in enumerate([mid_frame]):
             cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
             ret, frame = cap.read()
             if not ret:
@@ -56,4 +58,4 @@ def extract_scene_keyframes(video_path, output_folder, threshold=30.0):
     print("Scene keyframe extraction complete.")
 
 # Example usage
-extract_scene_keyframes("AutoLabel/mad_template.mp4", "scene_frames")
+extract_scene_keyframes("raw_videos/qifengle1.mp4", "generated_dataset")

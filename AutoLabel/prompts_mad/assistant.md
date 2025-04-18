@@ -3,5 +3,5 @@
   "angle": "eye-level"
   "lighting": "day",
   "subject": ["street", "people"],
-  "description": "A wide view of a bustling city street with people walking and colorful buildings in the background."
+  "description": "Cinematic composition, warm natural lighting with pronounced sun flare, dynamic upward perspective, rich forest color palette, tranquil and nostalgic tone, strong depth and contrast, suggestive of spiritual or emotional narrative."
 }

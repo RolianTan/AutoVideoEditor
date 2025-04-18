@@ -61,9 +61,12 @@ def get_frame_description(image_path, output_path):
     with open(output_path, "w", encoding="utf-8") as json_file:
         json.dump(frame_description_dict, json_file, indent=4)
 
-def process_frames(input_folder, output_folder, c = 1):
+def process_frames(input_folder, c = 1):
     """Processes every c-th frame in the input folder and saves JSON output in the output folder."""
-    
+    # Derive output folder path by replacing the last directory name
+    input_folder_parts = input_folder.rstrip(os.sep).split(os.sep)
+    input_folder_parts[-1] = "labels"
+    output_folder = os.sep.join(input_folder_parts)
     # Ensure output folder exists
     os.makedirs(output_folder, exist_ok=True)
     
@@ -83,9 +86,18 @@ def process_frames(input_folder, output_folder, c = 1):
         output_path = os.path.join(output_folder, json_filename)
 
         # Call function to process frame
-        get_frame_description(image_path, output_path)
+        try:
+            get_frame_description(image_path, output_path)
+        except Exception as e:
+            print(f"Error processing {image_filename}: {e}", "retrying after 10s")
+            time.sleep(10)
+            try:
+                get_frame_description(image_path, output_path)
+            except Exception as e:
+                print(f"Error processing {image_filename} again: {e}")
+                continue
 
         print(f"Processed: {image_filename} → {json_filename}")
 
-process_frames("scene_frames", "mad_template_labels", 1)
+process_frames("generated_dataset/qifengle1/frames", 1)
 # get_frame_description("test_frames/city1", "test_frames_labels/city1.")

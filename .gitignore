@@ -2,4 +2,9 @@ mad_scene_frames/
 mad_template_labels/
 AutoLabel/input.mp4
 AutoLabel/mad_template.mp4
+md_scene_labels/
+mad_scene_labels_c/
+dataset_labels/
+raw_videos/
+generated_dataset/
 

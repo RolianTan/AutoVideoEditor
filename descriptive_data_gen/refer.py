@@ -8,6 +8,7 @@ from openai import OpenAI
 import os
 
 client = OpenAI(api_key="sk-CxLi-7SJvgBVHbOfefj7-w", base_url="https://nova-litellm-proxy.onrender.com")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 #client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "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"))
 
 # Extract all frames & convert to base64-encoded JPG
