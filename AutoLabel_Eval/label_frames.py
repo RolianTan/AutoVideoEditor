@@ -13,14 +13,14 @@ client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # def get_frame_description(image_path, output_path):
 def get_frame_description(sampled_frames, frames_compare, idx, size=3):
-    system_prompt = load_prompt("AutoLabel/prompts_mad/system.md")
-    user_prompt = load_prompt("AutoLabel/prompts_mad/user.md")
-    assistant_prompt = load_prompt("AutoLabel/prompts_mad/assistant.md")
+    system_prompt = load_prompt("AutoLabel_Eval/prompts_mad/system.md")
+    user_prompt = load_prompt("AutoLabel_Eval/prompts_mad/user.md")
+    assistant_prompt = load_prompt("AutoLabel_Eval/prompts_mad/assistant.md")
 
     # create image input content list
     image_contents = [
-        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img}"}}
-        for img in sampled_frames
+        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{sampled_frames}"}}
+        # for img in sampled_frames
     ]
     # generate captions
     caption_candidates = []

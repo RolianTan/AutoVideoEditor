@@ -46,7 +46,7 @@ def image_selection(caption, model_name, all_videos, position):
                 "detail": "low"
             }
         })
-    # print('here')
+    print('here')
     # API call
     response = client.chat.completions.create(
         model=model_name,
