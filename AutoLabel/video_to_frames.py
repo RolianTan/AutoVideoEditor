@@ -58,4 +58,6 @@ def extract_scene_keyframes(video_path, output_folder, threshold=30.0):
     print("Scene keyframe extraction complete.")
 
 # Example usage
-extract_scene_keyframes("raw_videos/qifengle1.mp4", "generated_dataset")
+if __name__ == "__main__":
+    # Extract keyframes from the video
+    extract_scene_keyframes("raw_videos/qifengle1.mp4", "generated_dataset")

@@ -1,6 +1,9 @@
 import openai
 import base64
-from util import read_file, load_prompt
+try:
+    from AutoLabel.util import read_file, load_prompt
+except ImportError:
+    from util import read_file, load_prompt
 import json
 import os
 import ast
@@ -99,5 +102,9 @@ def process_frames(input_folder, c = 1):
 
         print(f"Processed: {image_filename} → {json_filename}")
 
-process_frames("generated_dataset/qifengle1/frames", 1)
+if __name__ == "__main__":
+    # Example usage
+    # process_frames("generated_dataset/qifengle1/frames", 1)
+    # get_frame_description("test_frames/city1", "test_frames_labels/city1.")
+    process_frames("generated_dataset/qifengle1/frames", 1)
 # get_frame_description("test_frames/city1", "test_frames_labels/city1.")

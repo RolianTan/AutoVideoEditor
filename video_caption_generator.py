@@ -115,6 +115,7 @@ def generate_captions_for_intervals(video_path, scene_intervals, interval_frames
 if __name__ == '__main__':
     # configs
     video_folder = 'training_videos/dataset01/'
+    video_folder = 'raw_videos/'
     frame_size = 512
     save_path = 'training_videos/dataset01/dataset_01.json'
     final_list = []
