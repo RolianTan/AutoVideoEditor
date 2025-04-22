@@ -1,0 +1,1 @@
+According to the video frames I provide, analyze this video and provide its cinematic elements.
