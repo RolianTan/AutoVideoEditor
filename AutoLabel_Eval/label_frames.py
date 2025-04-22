@@ -12,7 +12,7 @@ from .caption_eval import eval_captions
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # def get_frame_description(image_path, output_path):
-def get_frame_description(sampled_frames, frames_compare, idx, size=3):
+def get_frame_description(sampled_frames, frames_compare, idx, size=1):
     system_prompt = load_prompt("AutoLabel_Eval/prompts_mad/system.md")
     user_prompt = load_prompt("AutoLabel_Eval/prompts_mad/user.md")
     assistant_prompt = load_prompt("AutoLabel_Eval/prompts_mad/assistant.md")
@@ -29,7 +29,7 @@ def get_frame_description(sampled_frames, frames_compare, idx, size=3):
         while True:
             try:
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-4.1-mini",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": [
@@ -53,14 +53,18 @@ def get_frame_description(sampled_frames, frames_compare, idx, size=3):
 
     # evaluate captions
     # compare with other random video frames, and find best candidates
-    eval_models = ['gpt-4o', 'gpt-4.5-preview', 'gpt-4-turbo']
-    best_caption = eval_captions(
-        captions=caption_candidates,
-        target_video=sampled_frames,
-        distractor_videos=frames_compare,
-        eval_models=eval_models,
-        idx=idx
-    )
+    if size > 1:
+
+        eval_models = ['gpt-4o-mini']
+        best_caption = eval_captions(
+            captions=caption_candidates,
+            target_video=sampled_frames,
+            distractor_videos=frames_compare,
+            eval_models=eval_models,
+            idx=idx
+        )
+    else:
+        best_caption = caption_candidates[0]
 
     return best_caption
     # frame_description_dict = ast.literal_eval(frame_description)

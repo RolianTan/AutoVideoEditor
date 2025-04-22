@@ -7,4 +7,5 @@ mad_scene_labels_c/
 dataset_labels/
 raw_videos/
 generated_dataset/
-
+training_videos/
+caption_process/

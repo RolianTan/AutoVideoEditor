@@ -46,7 +46,6 @@ def image_selection(caption, model_name, all_videos, position):
                 "detail": "low"
             }
         })
-    print('here')
     # API call
     response = client.chat.completions.create(
         model=model_name,
@@ -91,7 +90,7 @@ def eval_captions(captions, target_video, distractor_videos, eval_models, idx):
 
     best_caption = max(scores, key=scores.get)
     best_score = scores[best_caption]
-
+    print("scores are ", scores.values())
     print(f"Scene {idx} Caption Saved with Accuracy: {best_score / len(eval_models)}")
 
     return best_caption

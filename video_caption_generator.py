@@ -28,7 +28,7 @@ def extract_all_frames(video_path, frame_size=512):
     return all_frames, fps
 
 # seperate the scene and get the scene list
-def scene_segmentation(video_path, seg_threshold=27.0):
+def scene_segmentation(video_path, seg_threshold=27.0, min_length=0):
     video_manager = VideoManager([video_path])
     stats_manager = StatsManager()
     scene_manager = SceneManager(stats_manager)
@@ -41,7 +41,7 @@ def scene_segmentation(video_path, seg_threshold=27.0):
     # round the time to 2 decimal numbers
     scene_intervals = [
         (round(scene_time[0].get_seconds(), 2), round(scene_time[1].get_seconds(), 2))
-        for scene_time in scene_list
+        for scene_time in scene_list if (scene_time[1].get_seconds() - scene_time[0].get_seconds()) >= min_length
     ]
 
     return scene_intervals
@@ -108,6 +108,7 @@ def generate_captions_for_intervals(video_path, scene_intervals, interval_frames
 if __name__ == '__main__':
     # configs
     video_folder = 'training_videos/dataset01/'
+    video_folder = 'raw_videos/'
     frame_size = 512
     save_path = 'training_videos/dataset01/dataset_01.json'
     final_list = []
@@ -118,7 +119,7 @@ if __name__ == '__main__':
     for path in video_list:
         all_frames, fps = extract_all_frames(path, frame_size)
         # get scene intervals and fps information
-        scene_intervals = scene_segmentation(path)
+        scene_intervals = scene_segmentation(path, min_length=1.5)
         # extract frames for each interval
         frames_list = get_frames_for_intervals(all_frames, scene_intervals, fps)
         # generate captions for each video clip
