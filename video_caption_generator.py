@@ -107,10 +107,10 @@ def generate_captions_for_intervals(video_path, scene_intervals, interval_frames
 
 if __name__ == '__main__':
     # configs
-    video_folder = 'training_videos/dataset01/'
-    video_folder = 'raw_videos/'
+    video_folder = 'training_videos/dataset_01/'
+    #video_folder = 'raw_videos/'
     frame_size = 512
-    save_path = 'training_videos/dataset01/dataset_01.json'
+    save_path = 'training_videos/dataset_01/dataset_01.json'
     final_list = []
     # os.makedirs(video_folder, exist_ok=True)
     # videos path
@@ -126,6 +126,6 @@ if __name__ == '__main__':
         video_caption = generate_captions_for_intervals(path, scene_intervals, frames_list)
         final_list.extend(video_caption)
         # write to json
-        with open(save_path, 'w') as f:
-            json.dump(final_list, f, indent=4)
-        print(f"Finish and write JSON file to {save_path}.")
+    with open(save_path, 'w') as f:
+        json.dump(final_list, f, indent=4)
+    print(f"Finish and write JSON file to {save_path}.")
