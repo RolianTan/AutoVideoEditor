@@ -8,7 +8,7 @@ from openai import OpenAI
 import os
 import openai
 import random
-from AutoLabel import label_frames
+from AutoLabel_Eval import label_frames
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Extract all frames & convert to base64-encoded JPG
@@ -56,28 +56,20 @@ def get_frames_for_intervals(all_frames, scene_intervals, fps):
 
 def generate_captions_for_intervals(video_path, scene_intervals, interval_frames):
     video_caption = []
-    # general_prompt = (
-    # "These frames are sampled from a video. Generate a professional and concise description that captures the video's visual characteristics. \
-    # Focus on *high-level photography keywords*, using commas to separate each term. \
-    # Do not include specific objects, summarized keywords should include scene, color, style, view, lighting, motion, texture, composition, mood/tone, perspective/angle, and depth of field. \
-    # Format the response as follows: [scene:..., color:..., style:..., view:..., lighting:..., motion:..., texture:..., composition:..., mood/tone:..., perspective/angle:..., depth of field:...]. \
-    # Fill each category with professional photography descriptive keywords. \
-    # Limit the description to 77 tokens and focus only on visual and graphical elements, ignoring any text or dialogue. \
-    # Prioritize keywords that best encapsulate the primary visual style and mood, with the most representative terms listed first."
-    # )
 
     for i, base64_frames in tqdm(enumerate(interval_frames)):
         start_time, end_time = scene_intervals[i]
         # derive start, mid and end frames
         total_frames = len(base64_frames)
-        if total_frames >= 3:
-            start_frame = base64_frames[0]
-            middle_frame = base64_frames[total_frames // 2]
-            end_frame = base64_frames[-1]
-            target_video = [start_frame, middle_frame, end_frame]
-        else:
-            # Handle cases where there are fewer than 3 frames
-            target_video = base64_frames
+        target_video = base64_frames[(total_frames // 2)]
+        # if total_frames >= 3:
+        #     start_frame = base64_frames[0]
+        #     middle_frame = base64_frames[total_frames // 2]
+        #     end_frame = base64_frames[-1]
+        #     target_video = [start_frame, middle_frame, end_frame]
+        # else:
+        #     # Handle cases where there are fewer than 3 frames
+        #     target_video = base64_frames
         # sampled_frames = base64_frames[::10]
 
         # choose random other video scenes, and derive 3 frames, create frame list for comparison evaluation
@@ -96,7 +88,8 @@ def generate_captions_for_intervals(video_path, scene_intervals, interval_frames
             #     ])
             # else:
             #     distractor_videos.extend(other_scene)
-            distractor_videos.append(interval_frames[j][0])
+            mid_point = len(interval_frames[j]) // 2
+            distractor_videos.append(interval_frames[j][mid_point])
 
         # caption generation
         caption = label_frames.get_frame_description(target_video, distractor_videos, idx=i)
@@ -115,7 +108,6 @@ def generate_captions_for_intervals(video_path, scene_intervals, interval_frames
 if __name__ == '__main__':
     # configs
     video_folder = 'training_videos/dataset01/'
-    video_folder = 'raw_videos/'
     frame_size = 512
     save_path = 'training_videos/dataset01/dataset_01.json'
     final_list = []
