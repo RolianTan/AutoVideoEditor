@@ -53,10 +53,10 @@ def get_frame_description(sampled_frames, frames_compare, idx, size=3):
 
     # evaluate captions
     # compare with other random video frames, and find best candidates
-    eval_models = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo']
+    eval_models = ['gpt-4o', 'gpt-4.5-preview', 'gpt-4-turbo']
     best_caption = eval_captions(
         captions=caption_candidates,
-        target_video=sampled_frames[0],
+        target_video=sampled_frames,
         distractor_videos=frames_compare,
         eval_models=eval_models,
         idx=idx
